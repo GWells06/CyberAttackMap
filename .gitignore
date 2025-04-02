@@ -1,0 +1,28 @@
+# Ignore Python virtual environment
+.venv/
+venv/
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore database files
+*.sqlite3
+
+# Ignore environment variables
+.env
+
+# Ignore uv and poetry files
+uv-pip.lock
+
+# Ignore Django static and media files (if generated)
+staticfiles/
+media/
+
+# Ignore node_modules if frontend uses JavaScript
+frontend/node_modules/
