@@ -1,0 +1,15 @@
+*.pyc
+**__pycache__/
+*.sqlite3
+env/
+*.log
+.mypy_cache/
+*.env
+*.egg-info
+staticfiles/
+media/
+node_modules/
+.python-version
+.venv/
+
+
