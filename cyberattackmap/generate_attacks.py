@@ -122,7 +122,7 @@ class SimulateCyberAttacks:
             # Send to WebSocket channel.
             channel_layer = channels.layers.get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                "update_attacks",
+                "attack_updates",
                 {"attack_type": "attack_message", "message": cyber_attack},
             )
 
