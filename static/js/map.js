@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Fetch initial attacks for the map.
     fetchInitialAttacks();
 
-    // Simulate regular attacks (as a fallback for WebSockets).
+    // Simulate regular attacks.
     setInterval(simulateAttack, 500);  // 2 attacks per second.
 
     function fetchInitialAttacks() {
@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Create a random attack.
         const sourceCountry = getRandomKey(COUNTRIES);
+
         // Choose a different country for the target.
         let targetCountry;
         do {
@@ -96,10 +97,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const severity = severityLevels[Math.floor(Math.random() * severityLevels.length)];
 
         // Add some random variability to the country coordinates.
-        const sourceLat = MAJOR_COUNTRIES[sourceCountry].lat + (Math.random() * 6 - 3);
-        const sourceLng = MAJOR_COUNTRIES[sourceCountry].lng + (Math.random() * 6 - 3);
-        const targetLat = MAJOR_COUNTRIES[targetCountry].lat + (Math.random() * 6 - 3);
-        const targetLng = MAJOR_COUNTRIES[targetCountry].lng + (Math.random() * 6 - 3);
+        const sourceLat = COUNTRIES[sourceCountry].lat + (Math.random() * 6 - 3);
+        const sourceLng = COUNTRIES[sourceCountry].lng + (Math.random() * 6 - 3);
+        const targetLat = COUNTRIES[targetCountry].lat + (Math.random() * 6 - 3);
+        const targetLng = COUNTRIES[targetCountry].lng + (Math.random() * 6 - 3);
 
         const attack = {
             id: Math.floor(Math.random() * 9000000) + 1000000,
