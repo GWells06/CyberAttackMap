@@ -9,8 +9,271 @@
     <!-- Leaflet CSS for map rendering -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Including css directly as map was not loading so I assume that the static is loading properly. -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --text-color: #ecf0f1;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --success-color: #2ecc71;
+            --info-color: #3498db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--secondary-color);
+        }
+
+        header h1 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+            font-size: 32px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-box {
+            flex: 1;
+            min-width: 150px;
+            background-color: var(--secondary-color);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-box span:first-child {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .map-container {
+            flex: 1;
+            min-height: 500px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        #attack-map {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            background-color: #111;
+        }
+
+        .attack-list-container {
+            padding: 15px;
+            background-color: var(--secondary-color);
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .attack-list-container h2 {
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-controls select {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: 1px solid #516275;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+
+        .attack-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border-top: 1px solid #516275;
+            padding-top: 10px;
+        }
+
+        .attack-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            background-color: rgba(44, 62, 80, 0.7);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .attack-info {
+            flex: 1;
+        }
+
+        .attack-type {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .attack-type.DDOS {
+            background-color: var(--danger-color);
+        }
+
+        .attack-type.MALWARE {
+            background-color: var(--warning-color);
+        }
+
+        .attack-type.PHISHING {
+            background-color: var(--info-color);
+        }
+
+        .attack-type.BRUTE.FORCE {
+            background-color: var(--success-color);
+        }
+
+        .attack-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: #bdc3c7;
+            margin-top: 5px;
+        }
+
+        .attack-severity {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .attack-severity.LOW {
+            background-color: #2ecc71;
+        }
+
+        .attack-severity.MEDIUM {
+            background-color: #f39c12;
+        }
+
+        .attack-severity.HIGH {
+            background-color: #e67e22;
+        }
+
+        .attack-severity.CRITICAL {
+            background-color: #e74c3c;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Map marker styles */
+        .attack-marker {
+            border-radius: 50%;
+            width: 10px;
+            height: 10px;
+            display: block;
+            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.6);
+            animation: ping 1s ease-out;
+        }
+
+        .attack-marker.DDOS {
+            background-color: var(--danger-color);
+        }
+
+        .attack-marker.MALWARE {
+            background-color: var(--warning-color);
+        }
+
+        .attack-marker.PHISHING {
+            background-color: var(--info-color);
+        }
+
+        .attack-marker.BRUTE.FORCE {
+            background-color: var(--success-color);
+        }
+
+        @keyframes ping {
+            0% {
+                opacity: 1;
+                transform: scale(0.2);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .stats {
+                flex-direction: column;
+            }
+
+            .stat-box {
+                width: 100%;
+            }
+
+            .map-container {
+                min-height: 300px;
+            }
+
+            #attack-map {
+                min-height: 300px;
+            }
+        }
+    </style>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -69,12 +332,324 @@
                 </div>
             </div>
             <div class="attack-list" id="attack-list">
-                <!-- Attack entries will be added here dynamically -->
+                <!-- Attack entries will be added here dynamically. -->
             </div>
         </div>
     </div>
 
-    <script src="{% static 'js/map.js' %}"></script>
+
+    <script>
+
+        // Wait for DOM to be fully loaded.
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Make sure the map container has dimensions.
+            const mapContainer = document.getElementById('attack-map');
+
+            // Check if map container exists.
+            if (!mapContainer) {
+                console.error('Map container not found!');
+                return;
+            }
+
+            // Initialize the map after confirming the container exists.
+            const map = L.map('attack-map', {
+                center: [20, 0],
+                zoom: 2,
+                minZoom: 2,
+                maxZoom: 6,
+                zoomControl: true,
+                attributionControl: false
+            });
+
+            // Add dark theme map tiles.
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd'
+            }).addTo(map);
+
+            // Global variables.
+            let attackCounter = 0;
+            let attacksPerSecond = 0;
+            const maxAttackHistory = 100;
+            const attackHistory = [];
+            const markers = {};
+
+            // DOM elements.
+            const attackCounterElement = document.getElementById('attack-counter');
+            const attacksPerSecondElement = document.getElementById('attacks-per-second');
+            const topTargetElement = document.getElementById('top-target');
+            const topSourceElement = document.getElementById('top-source');
+            const attackListElement = document.getElementById('attack-list');
+            const attackTypeFilterElement = document.getElementById('attack-type-filter');
+            const severityFilterElement = document.getElementById('severity-filter');
+
+            // Major countries with their approximate latitude and longitude.
+            const COUNTRIES = {
+                "United States": { "lat": 38.0902, "lng": -95.7129 },
+                "China": { "lat": 35.8617, "lng": 104.1954 },
+                "Russia": { "lat": 61.5240, "lng": 105.3188 },
+                "India": { "lat": 20.5937, "lng": 78.9629 },
+                "Brazil": { "lat": -14.2350, "lng": -51.9253 },
+                "United Kingdom": { "lat": 55.3781, "lng": -3.4360 },
+                "Germany": { "lat": 51.1657, "lng": 10.4515 },
+                "Japan": { "lat": 36.2048, "lng": 138.2529 },
+                "Canada": { "lat": 56.1304, "lng": -106.3468 },
+                "Australia": { "lat": -25.2744, "lng": 133.7751 },
+                "France": { "lat": 46.2276, "lng": 2.2137 },
+                "South Korea": { "lat": 35.9078, "lng": 127.7669 },
+                "Israel": { "lat": 31.0461, "lng": 34.8516 },
+                "Iran": { "lat": 32.4279, "lng": 53.6880 },
+                "North Korea": { "lat": 40.3399, "lng": 127.5101 },
+            };
+
+            // Major attack types.
+            const ATTACK_TYPES = ["DDOS", "MALWARE", "PHISHING", "BRUTE FORCE"];
+
+            // Stats tracking.
+            const countryAttackCounts = {
+                sources: {},
+                targets: {}
+            };
+
+            // Simulate regular attacks now instead of waiting for the API.
+            simulateInitialAttacks();
+
+            // Simulate regular attacks.
+            setInterval(simulateAttack, 500);  // 2 attacks per second.
+
+            // Instead of fetching, generate some initial attacks
+            function simulateInitialAttacks() {
+
+                // Generate 10 initial attacks
+                for (let i = 0; i < 10; i++) {
+                    simulateAttack();
+                }
+            }
+
+            // Generate a random attack.
+            function simulateAttack() {
+
+                // Create a random attack.
+                const sourceCountry = getRandomKey(COUNTRIES);
+
+                // Choose a different country for the target.
+                let targetCountry;
+                do {
+                    targetCountry = getRandomKey(COUNTRIES);
+                } while (targetCountry === sourceCountry);
+
+                const attackType = ATTACK_TYPES[Math.floor(Math.random() * ATTACK_TYPES.length)];
+                const severityLevels = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
+                const severity = severityLevels[Math.floor(Math.random() * severityLevels.length)];
+
+                // Add some random variability to the country coordinates.
+                const sourceLat = COUNTRIES[sourceCountry].lat + (Math.random() * 6 - 3);
+                const sourceLng = COUNTRIES[sourceCountry].lng + (Math.random() * 6 - 3);
+                const targetLat = COUNTRIES[targetCountry].lat + (Math.random() * 6 - 3);
+                const targetLng = COUNTRIES[targetCountry].lng + (Math.random() * 6 - 3);
+
+                const attack = {
+                    id: Math.floor(Math.random() * 9000000) + 1000000,
+                    timestamp: Math.floor(Date.now() / 1000),
+                    source_country: sourceCountry,
+                    source_lat: sourceLat,
+                    source_lng: sourceLng,
+                    target_country: targetCountry,
+                    target_lat: targetLat,
+                    target_lng: targetLng,
+                    attack_type: attackType,
+                    severity: severity
+                };
+
+                processAttack(attack);
+
+                // Add attack connection line visualization.
+                addAttackLine(attack);
+            }
+
+            function getRandomKey(obj) {
+                const keys = Object.keys(obj);
+                return keys[Math.floor(Math.random() * keys.length)];
+            }
+
+            // Process an attack and update the UI.
+            function processAttack(attack) {
+
+                // Update counter.
+                attackCounter++;
+
+                // Update attack rate calculation.
+                attacksPerSecond = 2;
+
+                // Update country statistics.
+                updateCountryStats(attack.source_country, attack.target_country);
+
+                // Add attack to history.
+                addAttackToHistory(attack);
+
+                // Add marker to map.
+                addAttackMarker(attack);
+
+                // Update DOM.
+                attackCounterElement.textContent = attackCounter;
+                attacksPerSecondElement.textContent = attacksPerSecond.toFixed(1);
+            }
+
+            function updateCountryStats(source, target) {
+                // Update source counts.
+                countryAttackCounts.sources[source] = (countryAttackCounts.sources[source] || 0) + 1;
+
+                // Update target counts.
+                countryAttackCounts.targets[target] = (countryAttackCounts.targets[target] || 0) + 1;
+
+                // Find top source.
+                let topSource = '';
+                let topSourceCount = 0;
+                for (const country in countryAttackCounts.sources) {
+                    if (countryAttackCounts.sources[country] > topSourceCount) {
+                        topSource = country;
+                        topSourceCount = countryAttackCounts.sources[country];
+                    }
+                }
+
+                // Find top target.
+                let topTarget = '';
+                let topTargetCount = 0;
+                for (const country in countryAttackCounts.targets) {
+                    if (countryAttackCounts.targets[country] > topTargetCount) {
+                        topTarget = country;
+                        topTargetCount = countryAttackCounts.targets[country];
+                    }
+                }
+
+                // Update DOM.
+                topSourceElement.textContent = topSource;
+                topTargetElement.textContent = topTarget;
+            }
+
+            function addAttackToHistory(attack) {
+                // Add to beginning of array.
+                attackHistory.unshift(attack);
+
+                // Trim the array if needed.
+                if (attackHistory.length > maxAttackHistory) {
+                    attackHistory.pop();
+                }
+
+                // Update attack list UI.
+                updateAttackList();
+            }
+
+            function updateAttackList() {
+                // Get filter values.
+                const typeFilter = attackTypeFilterElement.value;
+                const severityFilter = severityFilterElement.value;
+
+                // Clear current list.
+                attackListElement.innerHTML = '';
+
+                // Add filtered attacks to list.
+                attackHistory.forEach(attack => {
+                    // Apply filters.
+                    if ((typeFilter === 'ALL' || attack.attack_type === typeFilter) &&
+                        (severityFilter === 'ALL' || attack.severity === severityFilter)) {
+
+                        // Create attack item.
+                        const attackItem = document.createElement('div');
+                        attackItem.className = 'attack-item';
+
+                        // Format time.
+                        const attackTime = new Date(attack.timestamp * 1000);
+                        const timeStr = attackTime.toLocaleTimeString();
+
+                        // Build HTML.
+                        attackItem.innerHTML = `
+                        <div class="attack-info">
+                            <span class="attack-type ${attack.attack_type}">${attack.attack_type}</span>
+                            <div class="attack-meta">
+                                <span>${attack.source_country} → ${attack.target_country}</span>
+                                <span>${timeStr}</span>
+                            </div>
+                        </div>
+                        <div class="attack-severity ${attack.severity}">${attack.severity}</div>
+                    `;
+
+                        attackListElement.appendChild(attackItem);
+                    }
+                });
+            }
+
+            function addAttackMarker(attack) {
+
+                // Create a custom marker.
+                const markerElement = document.createElement('div');
+                markerElement.className = `attack-marker ${attack.attack_type}`;
+
+                // Add marker to map at source location.
+                const marker = L.marker([attack.source_lat, attack.source_lng], {
+                    icon: L.divIcon({
+                        className: 'custom-div-icon',
+                        html: markerElement,
+                        iconSize: [10, 10],
+                        iconAnchor: [5, 5]
+                    })
+                }).addTo(map);
+
+                // Store marker reference.
+                const markerId = `marker-${attack.id}`;
+                markers[markerId] = marker;
+
+                // Remove marker after animation completes.
+                setTimeout(() => {
+                    if (map && markers[markerId]) {
+                        map.removeLayer(markers[markerId]);
+                        delete markers[markerId];
+                    }
+                }, 2000);
+            }
+
+            // Add attack line visualization between source and target
+            function addAttackLine(attack) {
+                // Create a line between source and target
+                const line = L.polyline([
+                    [attack.source_lat, attack.source_lng],
+                    [attack.target_lat, attack.target_lng]
+                ], {
+                    color: getColorForAttackType(attack.attack_type),
+                    weight: 1,
+                    opacity: 0.7
+                }).addTo(map);
+
+                // Store line reference
+                const lineId = `line-${attack.id}`;
+                markers[lineId] = line;
+
+                // Remove line after animation completes
+                setTimeout(() => {
+                    if (map && markers[lineId]) {
+                        map.removeLayer(markers[lineId]);
+                        delete markers[lineId];
+                    }
+                }, 2000);
+            }
+
+            // Get color based on attack type
+            function getColorForAttackType(attackType) {
+                switch (attackType) {
+                    case 'DDOS': return '#e74c3c';
+                    case 'MALWARE': return '#f39c12';
+                    case 'PHISHING': return '#3498db';
+                    case 'BRUTE FORCE': return '#2ecc71';
+                    default: return '#3498db';
+                }
+            }
+
+            // Set up filter change events.
+            attackTypeFilterElement.addEventListener('change', updateAttackList);
+            severityFilterElement.addEventListener('change', updateAttackList);
+        });
+    </script>
 </body>
 
 </html>
