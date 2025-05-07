@@ -1,6 +1,6 @@
-#
-#
-#
+# consumer.py
+# Grant Wells
+# Setting up WebSocket communication.
 
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
