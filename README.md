@@ -44,7 +44,6 @@ BACKEND
    -     python3 manage.py runserver
 
 6. Now you can see cyber attacks happening in a simulated real time project.
-   
 
 CONTACT:
 
