@@ -1,0 +1,262 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #34495e;
+    --accent-color: #3498db;
+    --text-color: #ecf0f1;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --success-color: #2ecc71;
+    --info-color: #3498db;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI';
+    background-color: #1a1a1a;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    padding: 15px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--secondary-color);
+}
+
+header h1 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: var(--accent-color);
+    font-size: 32px;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.stat-box {
+    flex: 1;
+    min-width: 150px;
+    background-color: var(--secondary-color);
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.stat-box span:first-child {
+    font-size: 24px;
+    font-weight: bold;
+    display: block;
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.map-container {
+    flex: 1;
+    min-height: 500px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#attack-map {
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    background-color: #111;
+}
+
+.attack-list-container {
+    padding: 15px;
+    background-color: var(--secondary-color);
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.attack-list-container h2 {
+    margin-bottom: 15px;
+    color: var(--accent-color);
+}
+
+.filter-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.filter-controls select {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: 1px solid #516275;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.attack-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border-top: 1px solid #516275;
+    padding-top: 10px;
+}
+
+.attack-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 3px;
+    background-color: rgba(44, 62, 80, 0.7);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.attack-info {
+    flex: 1;
+}
+
+.attack-type {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.attack-type.DDOS {
+    background-color: var(--danger-color);
+}
+
+.attack-type.MALWARE {
+    background-color: var(--warning-color);
+}
+
+.attack-type.PHISHING {
+    background-color: var(--info-color);
+}
+
+.attack-type.BRUTE-FORCE {
+    background-color: var(--success-color);
+}
+
+.attack-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 14px;
+    color: #bdc3c7;
+    margin-top: 5px;
+}
+
+.attack-severity {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    text-align: center;
+    min-width: 80px;
+}
+
+.attack-severity.LOW {
+    background-color: #2ecc71;
+}
+
+.attack-severity.MEDIUM {
+    background-color: #f39c12;
+}
+
+.attack-severity.HIGH {
+    background-color: #e67e22;
+}
+
+.attack-severity.CRITICAL {
+    background-color: #e74c3c;
+    animation: pulse 1.5s infinite;
+}
+
+/* Map marker styles */
+.attack-marker {
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    display: block;
+    box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.6);
+    animation: ping 1s ease-out;
+}
+
+.attack-marker.DDOS {
+    background-color: var(--danger-color);
+}
+
+.attack-marker.MALWARE {
+    background-color: var(--warning-color);
+}
+
+.attack-marker.PHISHING {
+    background-color: var(--info-color);
+}
+
+.attack-marker.BRUTE-FORCE {
+    background-color: var(--success-color);
+}
+
+@keyframes ping {
+    0% {
+        opacity: 1;
+        transform: scale(0.2);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(2);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .stats {
+        flex-direction: column;
+    }
+
+    .stat-box {
+        width: 100%;
+    }
+
+    .map-container {
+        min-height: 300px;
+    }
+
+    #attack-map {
+        min-height: 300px;
+    }
+}

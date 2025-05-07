@@ -5,26 +5,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cyber Attack Map</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Leaflet CSS for map rendering -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <h1>Global Cyber Attack Visualization</h1>
-        <div class="stats">
-            <div>Attacks Today: <span id="attacks-count">0</span></div>
-            <div>Attack Rate: <span id="attacks-rate">0</span>/second</div>
+        <header>
+            <h1>Global Cyber Attack Visualization</h1>
+            <div class="stats">
+                <div class="stat-box">
+                    <span id="attack-counter">0</span>
+                    <span class="stat-label">Attacks Detected</span>
+                </div>
+                <div class="stat-box">
+                    <span id="attacks-per-second">0</span>
+                    <span class="stat-label">Attacks/Second</span>
+                </div>
+                <div class="stat-box">
+                    <span id="top-target">-</span>
+                    <span class="stat-label">Top Target</span>
+                </div>
+                <div class="stat-box">
+                    <span id="top-source">-</span>
+                    <span class="stat-label">Top Source</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="map-container">
+            <div id="attack-map"></div>
         </div>
-        <div class="legend">
-            <div class="legend-item"><span class="legend-color ddos"></span> DDOS</div>
-            <div class="legend-item"><span class="legend-color malware"></span> MALWARE</div>
-            <div class="legend-item"><span class="legend-color phishing"></span> PHISHING</div>
-            <div class="legend-item"><span class="legend-color brute-force"></span> BRUTE FORCE</div>
+
+        <div class="attack-list-container">
+            <h2>Recent Attacks</h2>
+            <div class="filter-controls">
+                <div>
+                    <label for="attack-type-filter">Attack Type:</label>
+                    <select id="attack-type-filter">
+                        <option value="ALL">All Types</option>
+                        <option value="DDOS">DDoS</option>
+                        <option value="MALWARE">Malware</option>
+                        <option value="PHISHING">Phishing</option>
+                        <option value="BRUTE FORCE">Brute Force</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="severity-filter">Severity:</label>
+                    <select id="severity-filter">
+                        <option value="ALL">All Severities</option>
+                        <option value="LOW">Low</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="HIGH">High</option>
+                        <option value="CRITICAL">Critical</option>
+                    </select>
+                </div>
+            </div>
+            <div class="attack-list" id="attack-list">
+                <!-- Attack entries will be added here dynamically -->
+            </div>
         </div>
-        <div id="globe-container"></div>
     </div>
-    <script src="/static/globe.js"></script>
+
+    <script src="{% static 'js/map.js' %}"></script>
 </body>
 
 </html>
